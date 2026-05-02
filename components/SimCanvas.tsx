@@ -7,7 +7,7 @@ import {
   type ReactElement,
 } from "react";
 
-import type { Agent, Cluster } from "@/lib/types";
+import type { Agent, AgentResearchState, Cluster } from "@/lib/types";
 
 /** Matches `useSimulation` / spec §4.1 logical canvas size (render-only — no physics import). */
 const LOGICAL_WIDTH = 1200;
@@ -242,12 +242,14 @@ function trailRingIndex(ring: TrailRing, logicalIndex: number): number {
 
 export type SimCanvasProps = {
   agentsRef: MutableRefObject<Agent[]>;
+  agentResearchRef?: MutableRefObject<AgentResearchState[]>;
   highlightClusterId: number | null;
   frozenClusters: Cluster[] | null;
 };
 
 export function SimCanvas({
   agentsRef,
+  agentResearchRef,
   highlightClusterId,
   frozenClusters,
 }: SimCanvasProps): ReactElement {
@@ -256,9 +258,13 @@ export function SimCanvas({
   const paletteRef = useRef<CanvasPalette | null>(null);
 
   const highlightPropsRef = useRef({ highlightClusterId, frozenClusters });
+  const researchRef = useRef(agentResearchRef);
   useEffect(() => {
     highlightPropsRef.current = { highlightClusterId, frozenClusters };
   }, [highlightClusterId, frozenClusters]);
+  useEffect(() => {
+    researchRef.current = agentResearchRef;
+  }, [agentResearchRef]);
 
   const highlightDeadlineRef = useRef<number | null>(null);
 
@@ -392,6 +398,52 @@ export function SimCanvas({
         ctx2d.fillStyle = palette.agentColor;
         ctx2d.fill();
 
+        ctx2d.restore();
+      }
+
+      const researchStates = researchRef.current?.current;
+      if (researchStates && researchStates.length > 0) {
+        ctx2d.save();
+        ctx2d.lineWidth = 1.25;
+        for (let i = 0; i < agents.length; i++) {
+          const a = agents[i]!;
+          const state = researchStates[i];
+          if (!state) continue;
+
+          const memoryAlpha = Math.min(0.34, state.memory.length / 110);
+          if (memoryAlpha > 0.025) {
+            const radius = 4 + Math.min(12, state.memory.length * 0.22);
+            ctx2d.beginPath();
+            ctx2d.arc(a.x, a.y, radius, 0, Math.PI * 2);
+            ctx2d.strokeStyle = `rgba(124,248,255,${memoryAlpha})`;
+            ctx2d.stroke();
+          }
+
+          if (state.suspicion > 0.08) {
+            const radius = 7 + state.suspicion * 8;
+            ctx2d.beginPath();
+            ctx2d.arc(a.x, a.y, radius, 0, Math.PI * 2);
+            ctx2d.strokeStyle = `rgba(255,190,92,${0.18 + state.suspicion * 0.42})`;
+            ctx2d.stroke();
+          }
+
+          if (state.infected) {
+            const radius = 5 + state.infectionLoad * 10;
+            ctx2d.beginPath();
+            ctx2d.arc(a.x, a.y, radius, 0, Math.PI * 2);
+            ctx2d.strokeStyle = state.infectionKnown
+              ? `rgba(255,92,92,${0.32 + state.infectionLoad * 0.48})`
+              : `rgba(255,190,92,${0.2 + state.infectionLoad * 0.28})`;
+            ctx2d.stroke();
+          }
+
+          if (state.malicious) {
+            ctx2d.beginPath();
+            ctx2d.arc(a.x, a.y, 10, 0, Math.PI * 2);
+            ctx2d.strokeStyle = "rgba(255,92,92,0.8)";
+            ctx2d.stroke();
+          }
+        }
         ctx2d.restore();
       }
 

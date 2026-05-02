@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactElement } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 
 import type { ChatMessage } from "@/lib/types";
 
@@ -15,12 +22,16 @@ export type ChatPanelProps = {
   history: ChatMessage[];
   onSendMessage: (message: string) => void;
   isPending: boolean;
+  researchPanel?: ReactNode;
+  side?: "left" | "right";
 };
 
 export function ChatPanel({
   history,
   onSendMessage,
   isPending,
+  researchPanel,
+  side = "right",
 }: ChatPanelProps): ReactElement {
   const [draft, setDraft] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
@@ -43,7 +54,11 @@ export function ChatPanel({
 
   return (
     <div
-      className="flex h-full min-h-0 flex-col border-l border-[var(--border-subtle)] bg-[var(--bg-page)]"
+      className={`flex h-full min-h-0 flex-col bg-[var(--bg-page)] ${
+        side === "left"
+          ? "border-r border-[var(--border-subtle)]"
+          : "border-l border-[var(--border-subtle)]"
+      }`}
       style={{ color: "var(--text-primary)" }}
     >
       <header className="shrink-0 border-b border-[var(--border-subtle)] px-5 py-4">
@@ -104,6 +119,8 @@ export function ChatPanel({
           <div ref={endRef} />
         </div>
       </div>
+
+      {researchPanel}
 
       <div className="shrink-0 border-t border-[var(--border-subtle)] px-4 pb-4 pt-3">
         <div className="mb-3 flex flex-wrap gap-2">

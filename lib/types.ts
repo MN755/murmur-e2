@@ -55,3 +55,190 @@ export interface ChatMessage {
   content: string;
   timestamp: number;
 }
+
+export type PhysicsMode = "boids" | "field" | "rigid" | "quantum";
+
+export interface PhysicsConfig {
+  mode: PhysicsMode;
+  agentRadius: number;
+  mass: number;
+  damping: number;
+  restitution: number;
+  friction: number;
+  gravity: number;
+  chargeStrength: number;
+  springStrength: number;
+  solverIterations: number;
+  quantumTunneling: number;
+  quantumDecoherence: number;
+  waveInterference: number;
+  entanglementRadius: number;
+}
+
+export type ResearchMode =
+  | "communication"
+  | "collision"
+  | "exclusion"
+  | "deception";
+
+export type MaliciousStrategy =
+  | "corrupt"
+  | "replay"
+  | "trustFarm"
+  | "isolate"
+  | "infect";
+
+export type InfectionAwarenessMode =
+  | "known"
+  | "hidden"
+  | "learnOverTime"
+  | "delayedReveal";
+
+export type ConsensusRule =
+  | "weightedTrust"
+  | "majority"
+  | "bayesian"
+  | "confidenceDecay";
+
+export interface ResearchConfig {
+  enabled: boolean;
+  mode: ResearchMode;
+  seed: number;
+  environmentSpeed: number;
+  communicationRadius: number;
+  broadcastIntervalMs: number;
+  packetsPerAgent: number;
+  packetTtl: number;
+  mutationBias: number;
+  entropyRate: number;
+  packetDropRate: number;
+  sensorNoise: number;
+  keyDriftRate: number;
+  linkFailureRate: number;
+  collisionCoupling: number;
+  maliciousAgentCount: number;
+  maliciousStrategy: MaliciousStrategy;
+  infectionRate: number;
+  infectionAwareness: InfectionAwarenessMode;
+  infectionDelayMs: number;
+  suspicionThreshold: number;
+  consensusRule: ConsensusRule;
+  consensusWeight: number;
+  emotionEnabled: boolean;
+  emotionPlasticity: number;
+  fearContagion: number;
+  cohesionDrive: number;
+  adversaryAvoidance: number;
+  blockadeStrength: number;
+}
+
+export interface InformationFragment {
+  id: number;
+  parentId: number | null;
+  originAgentId: number;
+  sourceAgentId: number;
+  value: number;
+  originalHash: number;
+  hops: number;
+  ttl: number;
+  lineageHash: number;
+  believedEncoded: boolean;
+  lastCarrierId: number;
+}
+
+export interface AgentResearchState {
+  agentId: number;
+  key: number;
+  malicious: boolean;
+  suspicion: number;
+  trust: number;
+  belief: number;
+  confidence: number;
+  infected: boolean;
+  infectionKnown: boolean;
+  infectionLoad: number;
+  infectionSourceId: number | null;
+  infectionDiscoveredAt: number | null;
+  memory: InformationFragment[];
+  knownOrigins: number;
+  lastContactAt: number;
+  falseFragmentsSent: number;
+  emotion: AgentEmotionState;
+}
+
+export interface AgentEmotionState {
+  valence: number;
+  arousal: number;
+  fear: number;
+  trustDrive: number;
+  curiosity: number;
+  aggression: number;
+  cohesion: number;
+}
+
+export interface TopologyTelemetry {
+  componentCount: number;
+  largestComponentSize: number;
+  isolatedAgents: number;
+  averageDegree: number;
+  bridgeAgentCount: number;
+}
+
+export interface LineageTelemetry {
+  rootCount: number;
+  branchCount: number;
+  maxDepth: number;
+  averageVariantsPerOrigin: number;
+  reconstructability: number;
+}
+
+export interface ConsensusTelemetry {
+  meanBelief: number;
+  beliefVariance: number;
+  meanConfidence: number;
+  polarizedAgents: number;
+  convergence: number;
+}
+
+export interface EmotionTelemetry {
+  meanValence: number;
+  meanArousal: number;
+  meanFear: number;
+  meanCohesion: number;
+  blockadeAgents: number;
+}
+
+export interface ResearchTelemetry {
+  mode: ResearchMode;
+  simTime: number;
+  activeFragments: number;
+  uniqueOrigins: number;
+  linkCount: number;
+  averageHops: number;
+  averageSuspicion: number;
+  maliciousKnownCount: number;
+  quarantineCount: number;
+  falseSignalCount: number;
+  recoveredAgents: number;
+  infectedCount: number;
+  knownInfectedCount: number;
+  avoidedAdversaryContacts: number;
+  emotion: EmotionTelemetry;
+  topology: TopologyTelemetry;
+  lineage: LineageTelemetry;
+  consensus: ConsensusTelemetry;
+}
+
+export interface ExperimentFrame {
+  index: number;
+  simTime: number;
+  config: ResearchConfig;
+  telemetry: ResearchTelemetry;
+}
+
+export interface ExperimentRecorderState {
+  isRecording: boolean;
+  isReplaying: boolean;
+  replayIndex: number;
+  frames: ExperimentFrame[];
+}

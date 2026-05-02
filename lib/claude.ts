@@ -3,6 +3,8 @@ import type { MessageParam } from "@anthropic-ai/sdk/resources/messages";
 import type {
   ChatMessage,
   ClaudeResponse,
+  ResearchConfig,
+  ResearchTelemetry,
   RuleWeights,
   SimSnapshot,
 } from "@/lib/types";
@@ -19,12 +21,15 @@ You have three jobs:
 2. Modify agent behavior when the user requests it (return rule_update)
 3. Reference specific clusters when relevant (return highlight_cluster
    with the cluster id from the snapshot)
+4. When research experiment telemetry is present, reason about it as
+   communication, trust, exclusion, deception, and interaction dynamics.
 
 Style:
 - Conversational, not robotic. Like a thoughtful colleague.
 - Concise. 1-3 sentences typically. Never lecture.
 - Reference specific numbers when they support the point.
 - Don't narrate every metric. Pick what matters.
+- Treat this as a research tool, not a game or entertainment simulator.
 
 You MUST always return valid JSON in this exact shape:
 {
@@ -131,13 +136,82 @@ Cluster details:
 ${clusterBlocks || "- (no clusters)"}`;
 }
 
+export function serializeResearchContext(
+  config: ResearchConfig,
+  telemetry: ResearchTelemetry | null,
+): string {
+  const t = telemetry;
+  return `[Current research experiment]
+- Enabled: ${config.enabled ? "yes" : "no"}
+- Mode: ${config.mode}
+- Seed: ${config.seed}
+- Environment speed: ${round1(config.environmentSpeed)}x simulated time
+- Communication radius: ${config.communicationRadius}px
+- Broadcast interval: ${round1(config.broadcastIntervalMs / 1000)} seconds
+- Packet TTL: ${config.packetTtl} hops
+- Packets per agent: ${config.packetsPerAgent}
+- Mutation bias: ${round1(config.mutationBias)}
+- Entropy rate: ${round1(config.entropyRate)}
+- Packet drop: ${round1(config.packetDropRate)}
+- Link failure: ${round1(config.linkFailureRate)}
+- Sensor noise: ${round1(config.sensorNoise)}
+- Key drift: ${round1(config.keyDriftRate)}
+- Collision coupling: ${round1(config.collisionCoupling)}
+- Malicious agents configured: ${config.maliciousAgentCount}
+- Malicious strategy: ${config.maliciousStrategy}
+- Infection rate: ${round1(config.infectionRate)}
+- Infection awareness: ${config.infectionAwareness}
+- Infection reveal delay: ${round1(config.infectionDelayMs / 1000)} seconds
+- Suspicion threshold: ${round1(config.suspicionThreshold)}
+- Consensus rule: ${config.consensusRule}
+- Consensus weight: ${round1(config.consensusWeight)}
+- Emotion model: ${config.emotionEnabled ? "enabled" : "disabled"}
+- Emotion plasticity: ${round1(config.emotionPlasticity)}
+- Fear contagion: ${round1(config.fearContagion)}
+- Cohesion drive: ${round1(config.cohesionDrive)}
+- Adversary avoidance: ${round1(config.adversaryAvoidance)}
+- Blockade strength: ${round1(config.blockadeStrength)}
+- Simulated time: ${round1((t?.simTime ?? 0) / 1000)} seconds
+- Active fragments: ${t?.activeFragments ?? 0}
+- Unique origins observed: ${t?.uniqueOrigins ?? 0}
+- Links in latest broadcast: ${t?.linkCount ?? 0}
+- Average mutation depth: ${round1(t?.averageHops ?? 0)} hops
+- Average suspicion: ${round1(t?.averageSuspicion ?? 0)}
+- Quarantined agents: ${t?.quarantineCount ?? 0}
+- Known malicious agents: ${t?.maliciousKnownCount ?? 0}
+- False signals sent to malicious agents: ${t?.falseSignalCount ?? 0}
+- Recovered agents in latest contact window: ${t?.recoveredAgents ?? 0}
+- Infected agents: ${t?.infectedCount ?? 0}
+- Known infected agents: ${t?.knownInfectedCount ?? 0}
+- Agents avoiding adversaries: ${t?.avoidedAdversaryContacts ?? 0}
+- Mean affect fear: ${round1(t?.emotion.meanFear ?? 0)}
+- Mean affect cohesion: ${round1(t?.emotion.meanCohesion ?? 0)}
+- Blockade agents: ${t?.emotion.blockadeAgents ?? 0}
+- Network components: ${t?.topology.componentCount ?? 0}
+- Largest connected component: ${t?.topology.largestComponentSize ?? 0}
+- Isolated agents: ${t?.topology.isolatedAgents ?? 0}
+- Average contact degree: ${round1(t?.topology.averageDegree ?? 0)}
+- Bridge-like low-degree agents: ${t?.topology.bridgeAgentCount ?? 0}
+- Lineage branches: ${t?.lineage.branchCount ?? 0}
+- Max lineage depth: ${t?.lineage.maxDepth ?? 0}
+- Average variants per origin: ${round1(t?.lineage.averageVariantsPerOrigin ?? 0)}
+- Signal reconstructability: ${round1(t?.lineage.reconstructability ?? 1)}
+- Mean consensus belief: ${round1(t?.consensus.meanBelief ?? 0)}
+- Consensus convergence: ${round1(t?.consensus.convergence ?? 0)}
+- Polarized agents: ${t?.consensus.polarizedAgents ?? 0}`;
+}
+
 export function buildPrompt(
   snapshot: SimSnapshot,
   history: ChatMessage[],
-  userMessage: string
+  userMessage: string,
+  research?: { config: ResearchConfig; telemetry: ResearchTelemetry | null },
 ): { system: string; messages: MessageParam[] } {
   const context = serializeSnapshotContext(snapshot);
-  const wrapped = `${context}
+  const researchContext = research
+    ? `\n\n${serializeResearchContext(research.config, research.telemetry)}`
+    : "";
+  const wrapped = `${context}${researchContext}
 
 [User]: ${userMessage}`;
 

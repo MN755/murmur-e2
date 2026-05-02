@@ -1,26 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000c18;
+  --foreground: #d7e8ff;
 
   /* Murmur — spec §5.3 & §4.6 visual tokens */
-  --bg-page: #0a0a0a;
-  --bg-canvas: #050505;
-  --bg-panel: rgba(255, 255, 255, 0.02);
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --text-primary: #e8f4ff;
-  --text-secondary: rgba(232, 244, 255, 0.55);
-  --text-mono: #b8c5d6;
-  --accent: #7cf8ff;
-  --accent-glow: rgba(124, 248, 255, 0.4);
-  --accent-soft: rgba(124, 248, 255, 0.15);
-  --agent-color: #e8f4ff;
-  --agent-glow: rgba(124, 248, 255, 0.4);
-  --trail-color: rgba(232, 244, 255, 0.6);
-  --highlight-stroke: #7cf8ff;
-  --highlight-glow: rgba(124, 248, 255, 0.8);
-  --grid-color: rgba(255, 255, 255, 0.04);
+  --bg-page: #000c18;
+  --bg-canvas: #000711;
+  --bg-panel: rgba(26, 50, 74, 0.46);
+  --border-subtle: rgba(102, 153, 204, 0.2);
+  --text-primary: #d7e8ff;
+  --text-secondary: rgba(183, 211, 243, 0.62);
+  --text-mono: #a7c4e6;
+  --accent: #36c2ff;
+  --accent-glow: rgba(54, 194, 255, 0.48);
+  --accent-soft: rgba(54, 194, 255, 0.16);
+  --agent-color: #d7e8ff;
+  --agent-glow: rgba(54, 194, 255, 0.42);
+  --trail-color: rgba(183, 211, 243, 0.56);
+  --highlight-stroke: #36c2ff;
+  --highlight-glow: rgba(54, 194, 255, 0.8);
+  --grid-color: rgba(102, 153, 204, 0.08);
+  --vscode-titlebar: #001126;
+  --vscode-side: #001b33;
+  --vscode-active: #04395e;
+  --vscode-focus: #007acc;
 }
 
 @theme inline {
@@ -32,15 +36,47 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #000c18;
+    --foreground: #d7e8ff;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+* {
+  scrollbar-color: rgba(54, 194, 255, 0.38) rgba(0, 7, 17, 0.9);
+  scrollbar-width: thin;
+}
+
+*::selection {
+  background: rgba(0, 122, 204, 0.45);
+  color: #ffffff;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 1px solid var(--vscode-focus);
+  outline-offset: 2px;
+}
+
+input,
+select,
+textarea {
+  box-shadow: inset 0 0 0 1px rgba(0, 122, 204, 0.04);
 }
 
 /* ChatPanel — spec §4.7 / §5.5 */

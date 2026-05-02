@@ -1,0 +1,16 @@
+.cursor/
+.next/
+.npm-cache/
+.release/
+.vercel/
+node_modules/
+coverage/
+out/
+build/
+.env*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo

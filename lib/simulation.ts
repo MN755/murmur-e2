@@ -47,15 +47,20 @@ function clampMag(x: number, y: number, max: number): [number, number] {
 /**
  * Random positions and velocities on the canvas. Each agent gets a stable `id` (0 .. count-1).
  */
-export function initAgents(count: number, width: number, height: number): Agent[] {
+export function initAgents(
+  count: number,
+  width: number,
+  height: number,
+  random: () => number = Math.random,
+): Agent[] {
   const agents: Agent[] = [];
   for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const speed = 0.5 + Math.random() * 1.5;
+    const angle = random() * Math.PI * 2;
+    const speed = 0.5 + random() * 1.5;
     agents.push({
       id: i,
-      x: Math.random() * width,
-      y: Math.random() * height,
+      x: random() * width,
+      y: random() * height,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
     });
