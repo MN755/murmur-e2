@@ -136,3 +136,5 @@ npm run build
 ```
 
 Both should pass without errors.
+
+Credit: Based Off of S. Valine's murmur project and developed further by MN755 using Codex, Vercel, Cursor, Claude Code, Ollama, and of course, localhost. Thanks to them all. 
