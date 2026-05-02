@@ -138,3 +138,5 @@ npm run build
 Both should pass without errors.
 
 Credit: Based Off of S. Valine's murmur project and developed further by MN755 using Codex, Vercel, Cursor, Claude Code, Ollama, and of course, localhost. Thanks to them all. 
+
+> "Nothing says rigorous multi-agent research like making the agents smarter, the docs longer, and the README responsible for explaining why this definitely was not just another flocking demo." - Codex
